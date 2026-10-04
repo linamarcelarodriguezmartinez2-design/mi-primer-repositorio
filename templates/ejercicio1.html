@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ejercicios Python</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='estilo.css') }}">
+
+</head>
+
+<body>
+
+
+    <!-- MENÚ -->
+
+    <nav>
+
+        <a href="/?menu=parimpar">
+            Par o Impar
+        </a>
+
+        <a href="/?menu=multiplicador">
+            Multiplicador
+        </a>
+
+        <a href="/?menu=adivinar">
+            Adivina el Número
+        </a>
+
+    </nav>
+
+
+    <!-- ========================= -->
+    <!-- PAR O IMPAR -->
+    <!-- ========================= -->
+
+    {% if menu == "parimpar" %}
+
+    <h3>
+        Verificador de Números Pares o Impares
+    </h3>
+
+    <form method="POST">
+
+        <label for="numero">
+            Introduce un número:
+        </label>
+
+        <input
+            type="number"
+            id="numero"
+            name="numero"
+            step="1"
+            required
+        >
+
+        <button type="submit">
+            Verificar
+        </button>
+
+    </form>
+
+
+    {% if resultado_par is not none %}
+
+    <h5>
+
+        El número {{ numero_par }}
+        es {{ resultado_par }}.
+
+    </h5>
+
+    {% endif %}
+
+
+    {% if lista_par %}
+
+    <div class="tabla">
+
+        <h4>Números ingresados</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Número</th>
+                    <th>Resultado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in lista_par %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ fila.numero }}</td>
+                    <td>{{ fila.resultado }}</td>
+                    <td>{{ fila.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {% endif %}
+
+    {% endif %}
+
+
+
+    <!-- ========================= -->
+    <!-- MULTIPLICADOR -->
+    <!-- ========================= -->
+
+    {% if menu == "multiplicador" %}
+
+    <h3>
+        Tabla de Multiplicar
+    </h3>
+
+    <form method="POST">
+
+        <label for="numero">
+            Introduce un número:
+        </label>
+
+        <input
+            type="number"
+            id="numero"
+            name="numero"
+            step="1"
+            required
+        >
+
+        <button type="submit">
+            Multiplicar
+        </button>
+
+    </form>
+
+
+    {% if tabla %}
+
+    <div class="tabla">
+
+        <h4>
+            Tabla del {{ numero_multiplicador }}
+        </h4>
+
+        {% for resultado in tabla %}
+
+        <p>
+            {{ numero_multiplicador }}
+            ×
+            {{ loop.index }}
+            =
+            {{ resultado }}
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+    {% endif %}
+
+
+
+    <!-- ========================= -->
+    <!-- ADIVINA EL NÚMERO -->
+    <!-- ========================= -->
+
+    {% if menu == "adivinar" %}
+
+    <h3>
+        Adivina el Número
+    </h3>
+
+
+    {% if not partida_activa %}
+
+    <!-- Paso 1: pedir el nombre -->
+
+    <form method="POST">
+
+        <input type="hidden" name="accion" value="iniciar">
+
+        <label for="nombre">
+            Escribe tu nombre para empezar:
+        </label>
+
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            maxlength="50"
+            value="{{ nombre_jugador or '' }}"
+            required
+        >
+
+        <button type="submit">
+            Empezar
+        </button>
+
+    </form>
+
+    {% else %}
+
+    <!-- Paso 2: ingresar números -->
+
+    <form method="POST">
+
+        <label for="numero">
+            {{ nombre_jugador }}, adivina un número del 1 al 100:
+        </label>
+
+        <input
+            type="number"
+            id="numero"
+            name="numero"
+            
+            step="1"
+            required
+        >
+
+        <div class="botones">
+
+            <button type="submit" name="accion" value="adivinar">
+                Adivinar
+            </button>
+
+            <button
+                type="submit"
+                name="accion"
+                value="abandonar"
+                class="btn-abandonar"
+                formnovalidate
+                onclick="return confirm('¿Abandonar la partida y volver a escribir tu nombre?')"
+            >
+                Abandonar
+            </button>
+
+        </div>
+
+    </form>
+
+    {% endif %}
+
+
+    {% if resultado_adivinar %}
+
+    <h5>
+
+        {{ resultado_adivinar }}
+
+    </h5>
+
+    {% endif %}
+
+
+    {% if top %}
+
+    <div class="tabla">
+
+        <h4>🏆 Top mejores intentos</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Puesto</th>
+                    <th>Nombre</th>
+                    <th>Intentos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in top %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ fila.nombre }}</td>
+                    <td>{{ fila.total_intentos }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {% endif %}
+
+
+    {% if historial %}
+
+    <div class="tabla">
+
+        <h4>Últimas partidas</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Números ingresados</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in historial %}
+                <tr>
+                    <td>{{ fila.nombre }}</td>
+                    <td>{{ fila.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ fila.numeros }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {% endif %}
+
+    {% endif %}
+
+
+</body>
+
+</html>
